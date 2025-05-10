@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Advanced Task Manager</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #ece9e6, #ffffff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      width: 400px;
+      transition: transform 0.3s ease;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 12px 15px;
+      font-size: 16px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus {
+      border-color: #4CAF50;
+    }
+
+    button {
+      padding: 12px 20px;
+      background: #4CAF50;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #43a047;
+    }
+
+    #task-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      background: #f0fdf4;
+      padding: 12px 15px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      animation: slideIn 0.5s ease;
+    }
+
+    li span {
+      font-weight: 500;
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: #ff5252;
+      font-size: 20px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .delete-btn:hover {
+      transform: scale(1.2);
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📋 Task Manager</h1>
+    <form id="task-form">
+      <input type="text" id="task-input" placeholder="Enter new task..." required />
+      <button type="submit">Add</button>
+    </form>
+    <ul id="task-list"></ul>
+  </div>
+
+  <script>
+    const taskForm = document.getElementById('task-form');
+    const taskInput = document.getElementById('task-input');
+    const taskList = document.getElementById('task-list');
+
+    window.onload = () => {
+      const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+      tasks.forEach(addTaskToDOM);
+    };
+
+    function saveTasks() {
+      const tasks = [...document.querySelectorAll('li')].map(li => li.querySelector('span').textContent);
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+
+    function addTaskToDOM(taskText) {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <span>${taskText}</span>
+        <button class="delete-btn">&times;</button>
+      `;
+      taskList.appendChild(li);
+
+      li.querySelector('.delete-btn').addEventListener('click', () => {
+        li.remove();
+        saveTasks();
+      });
+    }
+
+    taskForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const task = taskInput.value.trim();
+      if (task) {
+        addTaskToDOM(task);
+        saveTasks();
+        taskInput.value = '';
+      }
+    });
+  </script>
+</body>
+</html>
+
